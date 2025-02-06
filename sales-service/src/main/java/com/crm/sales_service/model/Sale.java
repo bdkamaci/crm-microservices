@@ -19,6 +19,7 @@ public class Sale {
     @Column(nullable = false)
     private Long customerId;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status;
 
