@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: sales-service
+  datasource:
+    url: jdbc:mysql://localhost:5432/salesdb
+    username: postgres
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 8084
+
+cloud:
+  feign:
+    client:
+      config:
+        customer-service:
+          url: http://customer-service
+        default:
+          loggerLevel: full
+          errorDecoder: com.crm.sales_service.exception.FeignErrorDecoder
