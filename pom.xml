@@ -20,6 +20,7 @@
 		<module>auth-service</module>
 		<module>customer-service</module>
 		<module>sales-service</module>
+		<module>user-service</module>
 	</modules>
 
 	<name>crm-microservices</name>
