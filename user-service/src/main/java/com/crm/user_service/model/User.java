@@ -1,10 +1,9 @@
-package com.crm.auth_service.model;
+package com.crm.user_service.model;
 
+import com.crm.user_service.model.enums.Role;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.Setter;
-import com.crm.auth_service.model.enums.Role;
 
 import java.time.LocalDateTime;
 
@@ -17,12 +16,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Email
     @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
-    private String password;
+    private String name;
+
+    @Column(nullable = false)
+    private String phone;
+
+    @Column(nullable = false)
+    private String company;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
