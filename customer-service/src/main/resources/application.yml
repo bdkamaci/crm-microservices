@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: customer-service
+  datasource:
+    url: jdbc:mysql://localhost:5432/customerdb
+    username: postgres
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 8083
