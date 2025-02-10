@@ -3,10 +3,12 @@ package com.crm.customer_service.service.impl;
 import com.crm.customer_service.dto.CustomerDto;
 import com.crm.customer_service.model.Customer;
 import com.crm.customer_service.repository.CustomerRepository;
-import com.crm.customer_service.repository.NoteRepository;
 import com.crm.customer_service.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +19,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
-    private final NoteRepository noteRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -56,8 +57,18 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CustomerDto> getAllCustomers() {
-        return customerRepository.findAll().stream()
+    public List<CustomerDto> getAllCustomers(String filter, String sortBy, String sortOrder, int page, int size) {
+        Sort.Direction direction = Sort.Direction.fromString(sortOrder);
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+        Specification<Customer> spec = (root, query, criteriaBuilder) -> {
+            if (filter == null || filter.isEmpty()) {
+                return criteriaBuilder.conjunction(); // No filter
+            }
+            return criteriaBuilder.like(root.get("firstName"), "%" + filter + "%");
+        };
+
+        return customerRepository.findAll(spec, pageRequest).stream()
                 .map(customer -> modelMapper.map(customer, CustomerDto.class))
                 .collect(Collectors.toList());
     }
