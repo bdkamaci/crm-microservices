@@ -71,7 +71,7 @@ API documentation is centralized and accessible through the API Gateway's Swagge
 - Install **PostgreSQL**
 - Clone the repository:
   ```sh
-  git clone https://github.com/bdkamaci.git
+  git clone https://github.com/bdkamaci/crm-microservices.git
   cd crm-microservices
   ```
 
