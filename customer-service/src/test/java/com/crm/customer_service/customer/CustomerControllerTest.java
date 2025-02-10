@@ -12,7 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -62,8 +62,7 @@ class CustomerControllerTest {
 
     @Test
     void createCustomer_ValidationFailure() throws Exception {
-        CustomerDto invalidCustomer = new CustomerDto();
-        // Missing required fields
+        CustomerDto invalidCustomer = new CustomerDto(); // Missing required fields
 
         mockMvc.perform(post("/customers")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -99,15 +98,20 @@ class CustomerControllerTest {
 
     @Test
     void getAllCustomers_Success() throws Exception {
-        List<CustomerDto> customers = Arrays.asList(customerDto);
-        when(customerService.getAllCustomers()).thenReturn(customers);
+        List<CustomerDto> customers = Collections.singletonList(customerDto);
+        when(customerService.getAllCustomers(eq("John"), eq("firstName"), eq("asc"), eq(0), eq(10))).thenReturn(customers);
 
-        mockMvc.perform(get("/customers"))
+        mockMvc.perform(get("/customers")
+                        .param("filter", "John")
+                        .param("sortBy", "firstName")
+                        .param("sortOrder", "asc")
+                        .param("page", "0")
+                        .param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(customerDto.getId()))
                 .andExpect(jsonPath("$[0].firstName").value(customerDto.getFirstName()));
 
-        verify(customerService).getAllCustomers();
+        verify(customerService).getAllCustomers(eq("John"), eq("firstName"), eq("asc"), eq(0), eq(10));
     }
 
     @Test

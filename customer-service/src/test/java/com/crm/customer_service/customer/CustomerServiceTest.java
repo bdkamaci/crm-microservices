@@ -11,8 +11,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -106,11 +110,14 @@ class CustomerServiceTest {
 
     @Test
     void getAllCustomers_Success() {
-        List<Customer> customers = Arrays.asList(customer);
-        when(customerRepository.findAll()).thenReturn(customers);
+        List<Customer> customers = Collections.singletonList(customer);
+        Page<Customer> page = new PageImpl<>(customers);
+
+        when(customerRepository.findAll(any(Specification.class), any(PageRequest.class)))
+                .thenReturn(page);
         when(modelMapper.map(customer, CustomerDto.class)).thenReturn(customerDto);
 
-        List<CustomerDto> result = customerService.getAllCustomers();
+        List<CustomerDto> result = customerService.getAllCustomers("John", "firstName", "asc", 0, 10);
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
