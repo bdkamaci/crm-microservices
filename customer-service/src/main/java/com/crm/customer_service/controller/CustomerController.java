@@ -36,8 +36,12 @@ public class CustomerController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CustomerDto>> getAllCustomers() {
-        return ResponseEntity.ok(customerService.getAllCustomers());
+    public ResponseEntity<List<CustomerDto>> getAllCustomers(@RequestParam(required = false) String filter,
+                                                             @RequestParam(defaultValue = "firstName") String sortBy,
+                                                             @RequestParam(defaultValue = "asc") String sortOrder,
+                                                             @RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(customerService.getAllCustomers(filter, sortBy, sortOrder, page, size));
     }
 
     @DeleteMapping("/{id}")
