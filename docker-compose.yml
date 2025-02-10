@@ -1,0 +1,144 @@
+version: "3.8"
+
+services:
+  # Eureka Server (Service Discovery)
+  eureka-server:
+    image: openjdk:17-jdk-slim
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    volumes:
+      - ./eureka-server:/app
+    working_dir: /app
+    command: ["java", "-jar", "eureka-server.jar"]
+    networks:
+      - crm-network
+
+  # API Gateway
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka-server
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    networks:
+      - crm-network
+
+  # Auth Service
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - eureka-server
+      - postgres-auth
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-auth:5432/authdb
+    networks:
+      - crm-network
+
+  # User Service
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eureka-server
+      - postgres-user
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-user:5432/userdb
+    networks:
+      - crm-network
+
+  # Customer Service
+  customer-service:
+    build: ./customer-service
+    container_name: customer-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - eureka-server
+      - postgres-customer
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-user:5432/customerdb
+    networks:
+      - crm-network
+
+  # Sales Service
+  sales-service:
+    build: ./sales-service
+    container_name: sales-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - eureka-server
+      - postgres-sales
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-user:5432/salesdb
+    networks:
+      - crm-network
+
+  # PostgreSQL for Auth Service
+  postgres-auth:
+    image: postgres:15
+    container_name: postgres-auth
+    restart: always
+    environment:
+      POSTGRES_DB: authdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+    networks:
+      - crm-network
+
+  # PostgreSQL for User Service
+  postgres-user:
+    image: postgres:15
+    container_name: postgres-user
+    restart: always
+    environment:
+      POSTGRES_DB: userdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5434:5432"
+    networks:
+      - crm-network
+
+  # PostgreSQL for Customer Service
+  postgres-customer:
+    image: postgres:15
+    container_name: postgres-customer
+    restart: always
+    environment:
+      POSTGRES_DB: customerdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5434:5432"
+    networks:
+      - crm-network
+
+  # PostgreSQL for Sales Service
+  postgres-sales:
+    image: postgres:15
+    container_name: postgres-sales
+    restart: always
+    environment:
+      POSTGRES_DB: salesdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5434:5432"
+    networks:
+      - crm-network
+
+networks:
+  crm-network:
+    driver: bridge
