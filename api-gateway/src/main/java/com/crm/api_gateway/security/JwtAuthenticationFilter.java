@@ -3,6 +3,7 @@ package com.crm.api_gateway.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -21,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 @Component
 public class JwtAuthenticationFilter implements GatewayFilter {
+    @Setter
     @Value("${jwt.secret}")
     private String jwtSecret;
 
