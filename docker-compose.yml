@@ -3,7 +3,7 @@ version: "3.8"
 services:
   # Eureka Server (Service Discovery)
   eureka-server:
-    image: openjdk:17-jdk-slim
+    image: openjdk:21-jdk-slim
     container_name: eureka-server
     ports:
       - "8761:8761"
